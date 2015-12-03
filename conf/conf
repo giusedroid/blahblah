@@ -1,0 +1,11 @@
+[self]
+host = localhost
+port = 8088
+blahpath = blahs
+debug = True
+
+[cache]
+maxsize = 5
+
+[customs]
+emptyjson = {"nope":"nope"}
