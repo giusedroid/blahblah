@@ -89,3 +89,21 @@ def set_value_in_blah(blah, key, value):
 
 		
 app.run(host=HOST, port=PORT, debug=DEBUG, reloader=RELOAD)
+
+data = ["a", "b", "c", "value"]
+
+def find_break(l, d):
+	accepted = []
+	output = None
+	for key in l:
+		try:
+			if isinstance(d, dict):
+				d = d[key]
+				accepted.append(key)
+			else:
+				print "reached the bottom"
+				break
+		except KeyError as k:
+			output = key
+			break
+	return output, accepted
