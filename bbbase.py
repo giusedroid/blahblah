@@ -36,9 +36,16 @@ def make_blah(blah):
 			data_file.flush()
 
 def recurse_key(blah_dict, key_list):
+	try:
 		if len(key_list) == 1:
 			return blah_dict[key_list.pop()]
 		return recurse_key(blah_dict[key_list.pop()], key_list)
+	except KeyError as e:
+		print "Key not found : %s" % e
+		return EMPTY_JSON
+	except TypeError as e:
+		print "TypeError : %s " % e
+		return EMPTY_JSON
 
 def load_blah(blah):
 	try:
