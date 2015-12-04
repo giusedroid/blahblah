@@ -65,8 +65,16 @@ def get_whole_blah(blah):
 
 @app.route("/blah/<blah>/<key:path>")
 def recurse_key(blah, key):
-	# TODO
-	pass
+	output = None
+	if isinstance(key, str):
+		key = key.split("/")[::-1]
+	if isinstance(blah, str):
+		output = blah
+		blah = get_whole_blah( blah )
+	if len(key)>1:
+		last = key.pop()
+		recurse_key(blah[last], key)
+	return output
 	
 		
 
