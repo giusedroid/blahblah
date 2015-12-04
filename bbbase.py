@@ -35,8 +35,11 @@ def make_blah(blah):
 			data_file.writeln(EMPTY_JSON)
 			data_file.flush()
 
+def recurse_key(blah_dict, key_list):
+		if len(key_list) == 1:
+			return blah_dict[key_list.pop()]
+		return recurse_key(blah_dict[key_list.pop()], key_list)
 
-@app.route("/load/<blah>")
 def load_blah(blah):
 	try:
 		CACHE[blah] = load_json(blah)
@@ -64,9 +67,10 @@ def get_whole_blah(blah):
 
 
 @app.route("/blah/<blah>/<key:path>")
-def recurse_key(blah, key):
-	# TODO
-	pass
+def get_blah(blah, key):
+	blah_dict = get_whole_blah(blah)
+	key_list = key.split("/")[::-1]
+	return recurse_key(blah_dict, key_list)
 	
 		
 
