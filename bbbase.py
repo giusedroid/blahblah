@@ -15,46 +15,43 @@ HOST = cp.get("self", "host")
 PORT = cp.get("self", "port")
 CACHE_MAXSIZE = cp.get("cache", "maxsize")
 BLAH_PATH = cp.get("self", "blahpath")
-EMPTY_JSON = cp.get("customs", "emptyjson")
+EMPTY_JSON_PATH = cp.get("customs", "emptyjson")
+with open(EMPTY_JSON_PATH, "r") as fp:
+	EMPTY_JSON = json.load(fp)
+RELOAD = cp.get("self", "reload")
 DEBUG = cp.get("self", "debug")
 
 app = bottle.Bottle()
-
 CACHE = LRUCache(maxsize=CACHE_MAXSIZE)
 
 
-def load_json(blah):
+def json_load(blah):
 	with open(os.path.join(BLAH_PATH, blah)) as data_file:
 		return json.load(data_file)
 
 
-def make_blah(blah):
-	f = os.path.join(BLAH_PATH, blah)
-	if not os.path.isfile(f):
-		with open(f,"w") as data_file:
-			data_file.writeln(EMPTY_JSON)
-			data_file.flush()
+def json_update(blah_dict, key_list, value):
+	reduce(dict.__getitem__, key_list[:-1], blah_dict).update({key_list[-1]:value})
+	return blah_dict
 
-def recurse_key(blah_dict, key_list):
+
+def json_write(blah_name, data):
+	f = os.path.join(BLAH_PATH, blah_name)
+	with open(f,"w") as data_file:
+		json.dump(data, data_file)
+
+
+def key_recurse(blah_dict, key_list):
 	try:
 		if len(key_list) == 1:
 			return blah_dict[key_list.pop()]
-		return recurse_key(blah_dict[key_list.pop()], key_list)
+		return key_recurse(blah_dict[key_list.pop()], key_list)
 	except KeyError as e:
 		print "Key not found : %s" % e
 		return EMPTY_JSON
 	except TypeError as e:
 		print "TypeError : %s " % e
 		return EMPTY_JSON
-
-def load_blah(blah):
-	try:
-		CACHE[blah] = load_json(blah)
-		output = '{"blah":"blah %s loaded"}' % blah
-	except IOError as e:
-		print "%s not found, returning standard empty json" % blah
-		output = EMPTY_JSON
-	return output
 
 
 @app.route("/blah/<blah>")
@@ -64,7 +61,7 @@ def get_whole_blah(blah):
 	except KeyError as e:
 		try:
 			print "Blah %s not cached, caching" % blah
-			CACHE[blah] = load_json(blah)
+			CACHE[blah] = json_load(blah)
 		except IOError as f:
 			print "Blah %s not stored in bbbase" % blah
 			CACHE[blah] = EMPTY_JSON
@@ -77,8 +74,18 @@ def get_whole_blah(blah):
 def get_blah(blah, key):
 	blah_dict = get_whole_blah(blah)
 	key_list = key.split("/")[::-1]
-	return recurse_key(blah_dict, key_list)
-	
-		
+	return key_recurse(blah_dict, key_list)
 
-app.run(host=HOST, port=PORT, debug=True)
+	
+@app.route("/set/<blah>/<key:path>/<value>")
+def set_value_in_blah(blah, key, value):
+	print "set key %s to %s in %s" % (key, value, blah)
+	blah_dict = get_whole_blah(blah)
+	key_list = key.split("/")
+	blah_dict = json_update(blah_dict, key_list, value)
+	json_write(blah, blah_dict)
+	CACHE[blah] = blah_dict
+	return blah_dict
+
+		
+app.run(host=HOST, port=PORT, debug=DEBUG, reloader=RELOAD)

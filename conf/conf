@@ -3,9 +3,10 @@ host = localhost
 port = 8088
 blahpath = blahs
 debug = True
+reload = True
 
 [cache]
 maxsize = 5
 
 [customs]
-emptyjson = {"nope":"nope"}
+emptyjson = blahs/empty
