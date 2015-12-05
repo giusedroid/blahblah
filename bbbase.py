@@ -31,6 +31,12 @@ def json_load(blah):
 
 
 def json_update(blah_dict, key_list, value):
+	"""
+	# gonna deprecate this, because Guido doesn't like reduce...
+	# also, it doesn't work for non existent paths
+	# that's why find_broken_link, deep_append, and prepare_graph 
+	# LOL it was a nice onliner
+	"""
 	reduce(dict.__getitem__, key_list[:-1], blah_dict).update({key_list[-1]:value})
 	return blah_dict
 
@@ -42,6 +48,10 @@ def json_write(blah_name, data):
 
 
 def key_recurse(blah_dict, key_list):
+	"""
+	I know loops are better for performances,
+	but recursion is so elegant... SIGH
+	"""
 	try:
 		if len(key_list) == 1:
 			return blah_dict[key_list.pop()]
@@ -62,7 +72,7 @@ def find_broken_link(l, d):
 				d = d[key]
 				accepted.append(key)
 			else:
-				print "reached non dict dead end"
+				print "[FindBrokenLink] reached non dict dead end"
 				output = key
 				break
 		except KeyError as k:
@@ -150,4 +160,3 @@ def set_value_in_blah(blah, key, value):
 
 		
 app.run(host=HOST, port=PORT, debug=DEBUG, reloader=RELOAD)
-
