@@ -53,6 +53,57 @@ def key_recurse(blah_dict, key_list):
 		print "TypeError : %s " % e
 		return EMPTY_JSON
 
+def find_broken_link(l, d):
+	accepted = []
+	output = None
+	for key in l:
+		try:
+			if isinstance(d, dict):
+				d = d[key]
+				accepted.append(key)
+			else:
+				print "reached non dict dead end"
+				output = key
+				break
+		except KeyError as k:
+			output = key
+			break
+	return output, accepted
+
+
+def deep_append(path, target, value):
+	steps = []
+	for key in path[:-1]:
+		steps.append([key, target[key]])
+		target = target[key]
+	steps.append([path[-1], value])
+	
+	while len(steps) > 1:
+		k = steps.pop()
+		try:
+			steps[-1][1].update({k[0]:k[1]})
+		except AttributeError as ae:
+			steps[-1][1] = {k[0]:k[1]}
+
+	return steps
+
+def prepare_graph(path,target):
+	broken, walked = find_broken_link(path, target)
+	
+	if broken is None:
+		print "tree is OK"
+		return target
+
+	print "Found broken path at %s" % broken
+
+	to_append = path[len(walked):]
+
+	for branch in to_append:
+		walked.append(branch)
+		target = deep_append(walked, target, {})[0]
+		target = {target[0]:target[1]}
+
+	return target
 
 @app.route("/blah/<blah>")
 def get_whole_blah(blah):
@@ -90,20 +141,3 @@ def set_value_in_blah(blah, key, value):
 		
 app.run(host=HOST, port=PORT, debug=DEBUG, reloader=RELOAD)
 
-data = ["a", "b", "c", "value"]
-
-def find_break(l, d):
-	accepted = []
-	output = None
-	for key in l:
-		try:
-			if isinstance(d, dict):
-				d = d[key]
-				accepted.append(key)
-			else:
-				print "reached the bottom"
-				break
-		except KeyError as k:
-			output = key
-			break
-	return output, accepted
