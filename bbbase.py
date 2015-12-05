@@ -81,8 +81,10 @@ def deep_append(path, target, value):
 	while len(steps) > 1:
 		k = steps.pop()
 		try:
+			print "[DeepAppend]: appending new branch"
 			steps[-1][1].update({k[0]:k[1]})
 		except AttributeError as ae:
+			print "[DeepAppend]: promoting leaf to branch"
 			steps[-1][1] = {k[0]:k[1]}
 
 	return steps
@@ -92,7 +94,7 @@ def prepare_graph(path,target):
 	
 	if broken is None:
 		print "tree is OK"
-		return target
+		return False
 
 	print "Found broken path at %s" % broken
 
@@ -115,13 +117,15 @@ def get_whole_blah(blah):
 			CACHE[blah] = json_load(blah)
 		except IOError as f:
 			print "Blah %s not stored in bbbase" % blah
-			CACHE[blah] = EMPTY_JSON
-			output = CACHE[blah]
+			#CACHE[blah] = EMPTY_JSON
+			#output = CACHE[blah]
+			output = EMPTY_JSON
+			return output
 		output = get_whole_blah(blah)
 	return output
 
 
-@app.route("/blah/<blah>/<key:path>")
+@app.route("/get/<blah>/<key:path>")
 def get_blah(blah, key):
 	blah_dict = get_whole_blah(blah)
 	key_list = key.split("/")[::-1]
@@ -133,7 +137,13 @@ def set_value_in_blah(blah, key, value):
 	print "set key %s to %s in %s" % (key, value, blah)
 	blah_dict = get_whole_blah(blah)
 	key_list = key.split("/")
-	blah_dict = json_update(blah_dict, key_list, value)
+	#blah_dict = json_update(blah_dict, key_list, value)
+	update_branch = prepare_graph(key_list, blah_dict)
+	if update_branch:
+		blah_dict[key_list[0]] = update_branch[key_list[0]]
+
+	da = deep_append(key_list, blah_dict, value)[0]
+	blah_dict.update({da[0]:da[1]})
 	json_write(blah, blah_dict)
 	CACHE[blah] = blah_dict
 	return blah_dict
