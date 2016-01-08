@@ -8,6 +8,7 @@ Feel free to blah blah your data here.
 
 ##Prerequisites
 python 2.7
+
 pip install bottle cachetools 
 
 ##Optionals
@@ -18,6 +19,7 @@ python bbbase.py &
 
 ##Usage / Test:
 curl http://localhost:8088/set/your_file/set/key/value
+
 curl http://localhost:8088/get/your_file/get/key
 
 Supports nested objects.
@@ -43,6 +45,7 @@ maxsize = 5
 [customs]
 
 \# path to default empty object
+
 emptyjson = blahs/empty
 
 ##Contacts
