@@ -35,9 +35,9 @@ reload = False
 maxsize = 5
 
 [customs]
-# path to default empty object
+\# path to default empty object
 emptyjson = blahs/empty
 
-#Contacts
+##Contacts
 http://giusedroid.blogspot.com
 @giusedroid on Twitter
