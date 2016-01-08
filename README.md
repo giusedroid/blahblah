@@ -6,29 +6,33 @@ The reason I waste my time writing it is I need to store some values across many
 
 Feel free to blah blah your data here.
 
-#Prerequisites
+##Prerequisites
 python 2.7
 pip install bottle cachetools 
 
-#Optionals
+##Optionals
 pip install cherrypy
 
-#Launch 
+##Launch 
 python bbbase.py &
 
-#Usage / Test:
+##Usage / Test:
 curl http://localhost:8088/set/your_file/set/key/value
 curl http://localhost:8088/get/your_file/get/key
 
 Supports nested objects.
 
-#Configurations
+##Configurations
 
 [self]
 host = localhost
+
 port = 8088
+
 blahpath = blahs
+
 debug = False
+
 reload = False
 
 [cache]
@@ -40,4 +44,5 @@ emptyjson = blahs/empty
 
 ##Contacts
 http://giusedroid.blogspot.com
+
 @giusedroid on Twitter
