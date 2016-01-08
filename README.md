@@ -25,6 +25,7 @@ Supports nested objects.
 ##Configurations
 
 [self]
+
 host = localhost
 
 port = 8088
@@ -36,9 +37,11 @@ debug = False
 reload = False
 
 [cache]
+
 maxsize = 5
 
 [customs]
+
 \# path to default empty object
 emptyjson = blahs/empty
 
