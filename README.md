@@ -18,9 +18,9 @@ pip install cherrypy
 python bbbase.py &
 
 ##Usage / Test:
-curl http://localhost:8088/set/your_file/set/key/value
+curl http://localhost:8088/set/your_file/key/value
 
-curl http://localhost:8088/get/your_file/get/key
+curl http://localhost:8088/get/your_file/key
 
 Supports nested objects.
 
